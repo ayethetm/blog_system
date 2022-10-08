@@ -202,7 +202,7 @@ else{
                         <input type="file" name="image" class="form-control">
                     </div>
                     <button type="submit" class="btn btn-success mt-3">Submit</button>
-                    <button type="reset" class="btn btn-secondary mt-3">Cancel</button>
+                    <a href="index.php" type="button" class="btn btn-secondary mt-3">Cancel</a>
                 </form>
               <!-- /.card-body -->
               

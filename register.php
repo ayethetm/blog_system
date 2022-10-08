@@ -1,10 +1,11 @@
 <?php
 
 session_start();
-require '../config/config.php';
+require 'config/config.php';
 
 if ($_POST) {
     //ACCEPT POST REQUEST DATA
+    $name = $_POST['name'];
     $email = $_POST['email'];
     $password = $_POST['password'];
 
@@ -16,16 +17,23 @@ if ($_POST) {
     $result = $statement->fetch(PDO::FETCH_ASSOC);
 
     if ($result) {
-        //check password correct or not
-        if ($password == $result['password']) {
-            $_SESSION['user_id'] = $result['id'];
-            $_SESSION['username'] = $result['name'];
-            $_SESSION['logged_in'] = time(); //set logged in time
-            header('Location:index.php');
-        }
+      echo '<script>alert("Email address is already taken");</script>';
     }
-
-    echo '<script>alert("Incorrect credentials!")</script>';
+    else
+    {
+      $stmt = $pdo->prepare("INSERT INTO users(name,email,password) VALUES(:name,:email,:password)");
+      $result = $stmt->execute(
+          array(':name' => $name,
+               ':email' => $email,
+                ':password' => $password
+                )
+      );
+  
+      if($result)
+      {
+          echo '<script>alert("Successfully created a user account.");window.location.href="login.php";</script>';
+      }
+    }
 
 }
 
@@ -42,27 +50,35 @@ if ($_POST) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="../plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- icheck bootstrap -->
-  <link rel="stylesheet" href="../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
   <!-- Theme style -->
-  <link rel="stylesheet" href="../dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="dist/css/adminlte.min.css">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 </head>
 <body class="hold-transition login-page">
 <div class="login-box">
   <div class="login-logo">
-    <a href="#"><b>Admin </b>Login</a>
+    <a href="#">Login</a>
   </div>
   <!-- /.login-logo -->
   <div class="card">
     <div class="card-body login-card-body">
-      <p class="login-box-msg">Sign in to start your session</p>
+      <p class="login-box-msg">Register as a new membership</p>
 
-      <form action="login.php" method="post">
+      <form action="register.php" method="post">
+      <div class="input-group mb-3">
+          <input type="text" name="name" class="form-control" placeholder="Name">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
         <div class="input-group mb-3">
           <input type="email" name="email" class="form-control" placeholder="Email">
           <div class="input-group-append">
@@ -82,13 +98,15 @@ if ($_POST) {
         <div class="row">
           <!-- /.col -->
           <div class="col-12">
-            <button type="submit" class="btn btn-primary btn-block">Log In</button>
+            <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
           </div>
           <!-- /.col -->
         </div>
       </form>
 
-     
+      <p class="mb-0">
+        <a href="login.php" class="text-center">I have an account already</a>
+      </p>
     </div>
     <!-- /.login-card-body -->
   </div>
@@ -96,11 +114,11 @@ if ($_POST) {
 <!-- /.login-box -->
 
 <!-- jQuery -->
-<script src="../plugins/jquery/jquery.min.js"></script>
+<script src="plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
-<script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
-<script src="../dist/js/adminlte.min.js"></script>
+<script src="./js/adminlte.min.js"></script>
 
 </body>
 </html>

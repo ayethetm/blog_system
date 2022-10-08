@@ -1,3 +1,17 @@
+<?php
+require 'config/config.php';
+session_start();
+//check whether user is logged in or not
+if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
+  header('Location:login.php');
+}
+
+//fetch get data by $_GET id
+$stmt = $pdo->prepare('SELECT * FROM posts WHERE id='.$_GET['id']);
+$stmt->execute();
+$result = $stmt->fetchAll();
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -38,17 +52,14 @@
             <!-- Box Comment -->
             <div class="card card-widget">
               <div class="card-header">
-                <h4 style="text-align:center">Blog Title</h4>
+                <h4 style="text-align:center"><?php echo $result[0]['title']; ?></h4>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <img class="img-fluid pad" src="
-                dist/img/photo2.png" alt="Photo">
-
-                <p>I took this photo this morning. What do you guys think?</p>
-                <button type="button" class="btn btn-default btn-sm"><i class="fas fa-share"></i> Share</button>
-                <button type="button" class="btn btn-default btn-sm"><i class="far fa-thumbs-up"></i> Like</button>
-                <span class="float-right text-muted">127 likes - 3 comments</span>
+                <image class="img-fluid pad" src="images/<?php echo $result[0]['image']; ?>" />
+                <p class="mt-5"><?php echo $result[0]['content']; ?><p>
+                <hr>
+                <h5 class="float-left text-muted">Comments</h5>
               </div>
               <!-- /.card-body -->
               <div class="card-footer card-comments">
