@@ -11,6 +11,36 @@ $stmt = $pdo->prepare('SELECT * FROM posts WHERE id='.$_GET['id']);
 $stmt->execute();
 $result = $stmt->fetchAll();
 
+//for posting comment
+$author_id = $_SESSION['user_id'];
+$post_id = $_GET['id'];
+if ($_POST) {
+  $comment = $_POST['comment'];
+  
+  $comment_stmt = $pdo->prepare("INSERT INTO comments(content,author_id,post_id) VALUES(:content,:author_id,:post_id)");
+  $result = $comment_stmt->execute(
+    array(
+          ':content' => $comment,
+          ':author_id' => $author_id,
+          ':post_id' => $post_id)
+       );
+
+       if($result)
+       {
+        header('Location:blogdetail.php?id='.$post_id);
+       }
+  }
+
+  //to get all comments under related post
+  $cmts_stmt = $pdo->prepare('SELECT * FROM comments WHERE post_id='.$post_id);
+  $cmts_stmt->execute();
+  $cmts_result = $cmts_stmt->fetchAll();
+
+  //to get comment user info
+  $cmt_user_stmt = $pdo->prepare('SELECT * FROM users WHERE id='.$author_id);
+  $cmt_user_stmt->execute();
+  $cmt_user_result = $cmt_user_stmt->fetchAll();
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -57,55 +87,43 @@ $result = $stmt->fetchAll();
               <!-- /.card-header -->
               <div class="card-body">
                 <image class="img-fluid pad" src="images/<?php echo $result[0]['image']; ?>" />
-                <p class="mt-5"><?php echo $result[0]['content']; ?><p>
+                <p class="mt-5 mb-3"><?php echo $result[0]['content']; ?><p>
+                <a href="index.php" type="button" class="btn btn-sm btn-secondary float-right"><i class="fas fa-back">
+                </i>Back to Home</a>
+                <br>
                 <hr>
-                <h5 class="float-left text-muted">Comments</h5>
+                <h4 class="float-left text-muted">Comments</h4>
               </div>
               <!-- /.card-body -->
-              <div class="card-footer card-comments">
-                <div class="card-comment">
+              <div class="card-footer card-comments" >
+                <div class="card-comment" >
+                <?php 
+                  foreach ($cmts_result as $value) 
+                  { ?>
+                  <div class="comment-text" style="margin-left:0px !important">
                   <!-- User image -->
-                  <img class="img-circle img-sm" src="
-                  dist/img/user3-128x128.jpg" alt="User Image">
-
-                  <div class="comment-text">
+                  <img class="img-circle img-sm" src="dist/img/avatar2.png" alt="User Image">
                     <span class="username">
-                      Maria Gonzales
-                      <span class="text-muted float-right">8:03 PM Today</span>
+                      <?php echo $cmt_user_result[0]['name']; ?>
+                      <span class="text-muted float-right"><?php echo $value['created_at']; ?></span>
                     </span><!-- /.username -->
-                    It is a long established fact that a reader will 
-                    distracted
-                    by the readable content of a page when looking at its layout.
+                    <?php echo $value['content']; ?>
                   </div>
-                  <!-- /.comment-text -->
+                  <hr>
+                    
+                <?php  }
+                ?>
+                
                 </div>
-                <!-- /.card-comment -->
-                <div class="card-comment">
-                  <!-- User image -->
-                  <img class="img-circle img-sm" src="
-                  dist/img/user4-128x128.jpg" alt="User Image">
-
-                  <div class="comment-text">
-                    <span class="username">
-                      Luna Stark
-                      <span class="text-muted float-right">8:03 PM Today</span>
-                    </span><!-- /.username -->
-                    It is a long established fact that a reader will 
-                    distracted
-                    by the readable content of a page when looking at its layout.
-                  </div>
-                  <!-- /.comment-text -->
-                </div>
-                <!-- /.card-comment -->
+               
               </div>
               <!-- /.card-footer -->
               <div class="card-footer">
-                <form action="#" method="post">
-                  <img class="img-fluid img-circle img-sm" src="
-                  dist/img/user4-128x128.jpg" alt="Alt Text">
+                <form action="" method="post">
+                  
                   <!-- .img-push is used to add margin to elements next to floating images -->
                   <div class="img-push">
-                    <input type="text" class="form-control form-control-sm" placeholder="Press enter to post comment">
+                    <input type="text" name="comment" class="form-control form-control-sm" placeholder="Press enter to post comment">
                   </div>
                 </form>
               </div>
@@ -120,15 +138,16 @@ $result = $stmt->fetchAll();
     </section>
     <!-- /.content -->
 
-    <a id="back-to-top" href="#" class="btn btn-primary back-to-top" role="button" aria-label="Scroll to top">
+    <!-- <a id="back-to-top" href="#" class="btn btn-primary back-to-top" role="button" aria-label="Scroll to top">
       <i class="fas fa-chevron-up"></i>
     </a>
- 
+  -->
   <!-- /.content-wrapper -->
 
   <footer class="main-footer" style="margin-left:0px !important">
     <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong> All rights
     reserved.
+    <a href="logout.php" type="button" class="btn btn-sm btn-danger float-right">Logout</a>
   </footer>
 
  

@@ -1,10 +1,47 @@
 <?php
 
-require '../config/config.php';
 session_start();
+require '../config/config.php';
+
 //check whether user is logged in or not
 if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   header('Location:login.php');
+}
+
+if ($_POST) {
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $accountType = $_POST['accountType'];
+   
+   //FIRST, check EMAIL exists or not in table
+   $statement = $pdo->prepare("SELECT * FROM users WHERE email=:email");
+   //bind value
+   $statement->bindValue(':email',$email);
+   $statement->execute();
+   $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+   if ($result) 
+   {
+     echo '<script>alert("Email address is already taken");</script>';
+   }
+   else
+   {
+     $stmt = $pdo->prepare("INSERT INTO users(name,email,password,role) VALUES(:name,:email,:password,:role)");
+     $result = $stmt->execute(
+         array(':name' => $name,
+              ':email' => $email,
+               ':password' => $password,
+               ':role' => $accountType
+               )
+     );
+ 
+     if($result)
+     {
+         echo '<script>alert("Successfully created a new user account.You must be note user account information!")</script>';
+     }
+   }
+
 }
 
 ?>
@@ -124,7 +161,7 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0 text-dark">Dashboard</h1>
+           
           </div><!-- /.col -->
           
         </div><!-- /.row -->
@@ -134,150 +171,57 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
 
     <!-- Main content -->
     <section class="content">
-      <div class="container-fluid">
-        <!-- Small boxes (Stat box) -->
-        <div class="row">
-          <div class="col-md-12">
+      <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
             <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">Blogs List</h3>
+                <div class="card-header">
+                    <h6 class="card-text font-weight-bold text-center">Create New Account</h6>
+                </div>
+              <div class="card-body card-body login-card-body">
+                <form action="add_new_user_by_admin.php" method="post">
+                    <div class="input-group mb-3">
+                    <input type="text" name="name" class="form-control" placeholder="Name">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                        <span class="fas fa-user"></span>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="input-group mb-3">
+                    <input type="email" name="email" class="form-control" placeholder="Email">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                        <span class="fas fa-envelope"></span>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="input-group mb-3">
+                    <input type="password" name="password" class="form-control" placeholder="Password">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                        <span class="fas fa-lock"></span>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <select id="accountType" class="form-control" name="accountType">
+                            <option selected>Select account type</option>
+                            <option value="1">Admin</option>
+                            <option value="0">Normal User</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary btn-block">Submit</button>
+                    </div>
+                    </div>
+                </form>
               </div>
-              <!-- /.card-header -->
-              <div class="card-body">
-                <a href="add.php" type="button" class="btn btn-info float-right"><i class="fas fa-plus">
-                </i> Create New</a>
-          
-                <table class="table table-bordered mt-5">
-                  <thead>                  
-                    <tr>
-                      <th>#</th>
-                      <th>Title</th>
-                      <th>Content</th>
-                      <th>Image</th>
-                      <th colspan="2">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <?php
-
-                      if (!empty($_GET['pageno'])) 
-                      {
-                       $pageno = $_GET['pageno'];
-                      }
-                      else
-                      {
-                        $pageno = 1;
-                      }
-
-                      $numOfrecs = 3; // number of records in one one page
-                      $offset = ($pageno - 1) * $numOfrecs; // offset algorithm
-
-                      if (empty($_POST['search'])) 
-                      {
-                        $stmt = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC");
-                        $stmt->execute();
-                        $rawResult = $stmt->fetchAll();
-
-                        $total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
-
-                        $stmt = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC LIMIT $offset,$numOfrecs");
-                        $stmt->execute();
-                        $result = $stmt->fetchAll();
-
-  
-                        if ($result) 
-                        { 
-                          $i = 1;
-                          foreach ($result as $value) 
-                          { ?>
-                            <tr>
-                            <td><?php echo $i;?></td>
-                            <td><?php echo $value['title'];?></td>
-                            <td><?php echo substr($value['content'],0,50);?>
-                            </td>
-                            <td><?php echo $value['image'];?>
-                            </td>
-                            <td><a href="edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
-                            <a href="delete.php?id=<?php echo $value['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>
-                            </tr>
-                            <?php    
-                            $i++;
-                          }
-                        }
-                      }
-                      else
-                      {
-                        $searchKey = $_POST['search'];
-
-                        $stmt = $pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$searchKey%' ORDER BY id DESC");
-                        $stmt->execute();
-                        $rawResult = $stmt->fetchAll();
-
-                        $total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
-
-                        $stmt = $pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$searchKey%' ORDER BY id DESC LIMIT $offset,$numOfrecs");
-                        $stmt->execute();
-                        $result = $stmt->fetchAll();
-                       
-                        if ($result) 
-                        { 
-                          $i = 1;
-                          foreach ($result as $value) 
-                          { ?>
-                            <tr>
-                            <td><?php echo $i;?></td>
-                            <td><?php echo $value['title'];?></td>
-                            <td><?php echo substr($value['content'],0,50);?>
-                            </td>
-                            <td><?php echo $value['image'];?>
-                            </td>
-                            <td><a href="edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
-                            <a href="delete.php?id=<?php echo $value['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>
-                            </tr>
-                            <?php    
-                            $i++;
-                          }
-                        }
-                      }
-                          
-                    ?>
-                    
-                  </tbody>
-                </table>
-                <br>
-                <!-- for pageno navbar -->
-                <!-- First = the first page no  -->
-                <!-- Previous( << ) = if current page no is less than or equal to 1, previous button will be disabled -->
-                <!-- Next( >> ) = if current page no is greater than or equal to total pages, next button can't be click -->
-                <!-- Current page = current page no -->
-                <!-- Last = the last page no -->
-                <nav aria-label="Page navigation example">
-                  <ul class="pagination justify-content-end">
-                    <li class="page-item">
-                      <a class="page-link" href="?pageno=1">First</a>
-                    </li>
-                    <li class="page-item <?php if ($pageno <= 1) {echo 'disabled'; }?>">
-                      <a class="page-link" href="<?php if($pageno <=1) { echo '#'; } else { 
-                        echo "?pageno=".($pageno-1); } ?>"><<</a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#"><?php echo $pageno; ?></a>
-                    </li>
-                    <li class="page-item"<?php if ($pageno >= $total_pages) {echo 'disabled'; }?>">
-                      <a class="page-link" href="<?php if($pageno >= $total_pages) { echo '#'; } else { 
-                        echo "?pageno=".($pageno+1); } ?>">>></a>
-                    </li>
-                    <li class="page-item">
-                      <a class="page-link" href="?pageno=<?php echo $total_pages; ?>">Last</a>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
-              <!-- /.card-body -->
-              
             </div>
-            <!-- /.card -->
-          </div>
+            </div>
         </div>
+            
         <!-- /.row (main row) -->
       </div><!-- /.container-fluid -->
     </section>
