@@ -12,53 +12,44 @@ if ($_SESSION['role'] != 1) {
 }
 
 
-if ($_POST) {
-
+if ($_POST) 
+{
+  //ACCEPT POST REQUEST DATA
    $id = $_POST['id'];
-   $title = $_POST['title'];
-   $content = $_POST['content'];
+   $name = $_POST['name'];
+   $email = $_POST['email'];
+   $role = $_POST['accountType'];
 
-   //user upload new image condition
-   if ($_FILES['image']['name'] != null) 
-   {
-        $image = $_FILES['image']['name'];
-        $file = '../images/'.($_FILES['image']['name']); // to save image under images folder
-        $imageType = pathinfo($file,PATHINFO_EXTENSION); // to get image type
-        //to check image type correct or not
-        if ($imageType != 'png' && $imageType != 'jpg' && $imageType != 'jpeg' ) {
-            echo '<script>alert("Image must be png,jpg,jpeg")</script>';
-        }
-        else
-        {
-            move_uploaded_file($_FILES['image']['tmp_name'],$file); // final step to save image
+    //FIRST, check EMAIL exists or not in table
+    $statement = $pdo->prepare("SELECT * FROM users WHERE email=:email AND id!=:id");
+    $statement->execute(array('email'=>$email,'id'=>$id));
+    $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+    if ($result) 
+    {
+      echo '<script>alert("Email address is already taken");</script>';
+      //fetch get data by $_GET id
+      $stmt = $pdo->prepare('SELECT * FROM users WHERE id='.$_GET['id']);
+      $stmt->execute();
+      $result = $stmt->fetchAll();
+    }
+    else
+    {
+      $stmt = $pdo->prepare("UPDATE users SET name='$name',email='$email',role='$role' WHERE id='$id' ") ;
+      $result = $stmt->execute();
+          
+      if($result)
+          {
+                  echo '<script>alert("Successfully updated !");window.location.href="users.php";</script>';
+          }
+    }
     
-            $stmt = $pdo->prepare("UPDATE posts SET title='$title',content='$content',image='$image' WHERE id='$id' ") ;
-            $result = $stmt->execute();
-        
-            if($result)
-            {
-                echo '<script>alert("Successfully updated !");window.location.href="index.php";</script>';
-            }
-        }
-   }
-   //user update data without new image 
-   else 
-   {
-        $stmt = $pdo->prepare("UPDATE posts SET title='$title',content='$content' WHERE id='$id' ") ;
-        $result = $stmt->execute();
-
-        if($result)
-        {
-            echo '<script>alert("Successfully updated !");window.location.href="index.php";</script>';
-        }
-   }
-   
-
-}
+    
+} 
 else{
     
     //fetch get data by $_GET id
-    $stmt = $pdo->prepare('SELECT * FROM posts WHERE id='.$_GET['id']);
+    $stmt = $pdo->prepare('SELECT * FROM users WHERE id='.$_GET['id']);
     $stmt->execute();
     $result = $stmt->fetchAll();
 }
@@ -70,7 +61,7 @@ else{
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Blog | Dashboard</title>
+  <title>Blog Project</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Font Awesome -->
@@ -108,7 +99,7 @@ else{
 
     <!-- SEARCH FORM -->
     
-      <form class="form-inline ml-3" method="POST" action="index.php">
+      <form class="form-inline ml-3" method="POST" action="users.php">
         <div class="input-group input-group-sm">
           <input name="search" class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
           <div class="input-group-append">
@@ -158,6 +149,14 @@ else{
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="users.php" class="nav-link">
+              <i class="nav-icon fas fa-users"></i>
+              <p>
+                Users
+              </p>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
@@ -165,8 +164,8 @@ else{
     <!-- /.sidebar -->
   </aside>
 
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+   <!-- Content Wrapper. Contains page content -->
+   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <div class="content-header">
       <div class="container-fluid">
@@ -182,38 +181,58 @@ else{
 
     <!-- Main content -->
     <section class="content">
-      <div class="container-fluid">
-        <!-- Small boxes (Stat box) -->
-        <div class="row">
-          <div class="col-md-12">
+      <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
             <div class="card">
-              <div class="card-body">
-                <form method="POST" action="" enctype="multipart/form-data">
-                    <input type="hidden" name="id" value="<?php echo $result[0]['id']; ?>">
+                <div class="card-header">
+                    <h6 class="card-text font-weight-bold text-center">Edit User Account</h6>
+                </div>
+              <div class="card-body card-body login-card-body">
+                <form action="" method="post">
+                <input type="hidden" name="id" value="<?php echo $result[0]['id']; ?>">
+                    <div class="input-group mb-3">
+                    <input type="text" name="name" class="form-control" placeholder="Name" 
+                    value="<?php echo $result[0]['name'];?>">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                        <span class="fas fa-user"></span>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="input-group mb-3">
+                    <input type="email" name="email" class="form-control" placeholder="Email"
+                    value="<?php echo $result[0]['email'];?>">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                        <span class="fas fa-envelope"></span>
+                        </div>
+                    </div> 
+                    </div>
                     <div class="form-group mb-3">
-                        <label for="title">Title</label>
-                        <input type="text" class="form-control" name="title" value="<?php echo $result[0]['title']; ?>">
+                        <select id="accountType" class="form-control" name="accountType">
+                            <option selected>Current selected role (
+                              <?php if ($result[0]['role'] == 1) {
+                                echo 'Admin';
+                            } else { echo 'Normal User' ; }?> )</option>
+                            <option value="1">Admin</option>
+                            <option value="0">Normal User</option>
+                        </select>
                     </div>
-                    <div class="form-group">
-                        <label for="content">Content</label>
-                        <textarea class="form-control" id="" rows="3" name="content" value="<?php echo $result[0]['content']; ?>" ><?php echo $result[0]['content']; ?></textarea>
+                    <div class="row">
+                    <div class="col-6">
+                        <button type="submit" class="btn btn-primary btn-block">Submit</button>
                     </div>
-                    <div class="form-group">
-                        <label for="image">Upload image</label>
-                        <br>
-                        <image src="../images/<?php echo $result[0]['image']; ?>" width="50px" height="50px" />
-                        <br><br>
-                        <input type="file" name="image" class="form-control">
+                    <div class="col-6">
+                        <a href="users.php" type="button" class="btn btn-secondary btn-block">Cancel</a>
                     </div>
-                    <button type="submit" class="btn btn-success mt-3">Submit</button>
-                    <a href="index.php" type="button" class="btn btn-secondary mt-3">Cancel</a>
+                    </div>
                 </form>
-              <!-- /.card-body -->
-              
+              </div>
             </div>
-            <!-- /.card -->
-          </div>
+            </div>
         </div>
+            
         <!-- /.row (main row) -->
       </div><!-- /.container-fluid -->
     </section>

@@ -7,6 +7,7 @@ if ($_POST) {
     //ACCEPT POST REQUEST DATA
     $email = $_POST['email'];
     $password = $_POST['password'];
+    
 
     //FIRST, check EMAIL exists or not in table
     $statement = $pdo->prepare("SELECT * FROM users WHERE email=:email");
@@ -20,8 +21,9 @@ if ($_POST) {
         if ($password == $result['password']) {
             $_SESSION['user_id'] = $result['id'];
             $_SESSION['username'] = $result['name'];
-            $_SESSION['logged_in'] = time(); //set logged in time
-            header('Location:index.php');
+            $_SESSION['logged_in'] = time();//set logged in time
+            $_SESSION['role'] = 0; 
+            header('Location:index.php');//when login success,redirect to 
         }
     }
 

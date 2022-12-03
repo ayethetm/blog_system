@@ -9,6 +9,7 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
 if ($_SESSION['role'] != 1) {
   header('Location:login.php');
 }
+
 if ($_POST) {
   setcookie('search',$_POST['search'],time() + (86400 * 30), "/");
 }
@@ -20,7 +21,9 @@ else{
 }
 
 ?>
+
 <?php include('header.php'); ?>
+
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
@@ -93,20 +96,20 @@ else{
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Blogs List</h3>
+                <h3 class="card-title">Users List</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <a href="add.php" type="button" class="btn btn-info float-right"><i class="fas fa-plus">
-                </i> Create New</a>
+                <a href="add_new_user_by_admin.php" type="button" class="btn btn-info float-right"><i class="fas fa-plus">
+                </i> Create New User Account</a>
           
                 <table class="table table-bordered mt-5">
                   <thead>                  
                     <tr>
                       <th>#</th>
-                      <th>Title</th>
-                      <th>Content</th>
-                      <th>Image</th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Role</th>
                       <th colspan="2">Actions</th>
                     </tr>
                   </thead>
@@ -127,13 +130,13 @@ else{
 
                       if (empty($_POST['search']) && empty($_COOKIE['search'])) 
                       {
-                        $stmt = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC");
+                        $stmt = $pdo->prepare("SELECT * FROM users ORDER BY id DESC");
                         $stmt->execute();
                         $rawResult = $stmt->fetchAll();
 
                         $total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
 
-                        $stmt = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC LIMIT $offset,$numOfrecs");
+                        $stmt = $pdo->prepare("SELECT * FROM users ORDER BY id DESC LIMIT $offset,$numOfrecs");
                         $stmt->execute();
                         $result = $stmt->fetchAll();
 
@@ -145,13 +148,18 @@ else{
                           { ?>
                             <tr>
                             <td><?php echo $i;?></td>
-                            <td><?php echo $value['title'];?></td>
-                            <td><?php echo substr($value['content'],0,50);?>
+                            <td><?php echo $value['name'];?></td>
+                            <td><?php echo $value['email'];?>
                             </td>
-                            <td><?php echo $value['image'];?>
+                            <td>
+                                <?php 
+                                if($value['role'] == 1)
+                                {echo 'Admin';} 
+                                else
+                                {echo 'User'; } ?>
                             </td>
-                            <td><a href="edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
-                            <a href="delete.php?id=<?php echo $value['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>
+                            <td><a href="user_edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
+                            <a href="user_delete.php?id=<?php echo $value['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>
                             </tr>
                             <?php    
                             $i++;
@@ -162,13 +170,13 @@ else{
                       {
                         $searchKey = $_POST ? $_POST['search'] : $_COOKIE['search'];
 
-                        $stmt = $pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$searchKey%' ORDER BY id DESC");
+                        $stmt = $pdo->prepare("SELECT * FROM users WHERE name LIKE '%$searchKey%' ORDER BY id DESC");
                         $stmt->execute();
                         $rawResult = $stmt->fetchAll();
 
                         $total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
 
-                        $stmt = $pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$searchKey%' ORDER BY id DESC LIMIT $offset,$numOfrecs");
+                        $stmt = $pdo->prepare("SELECT * FROM users WHERE name LIKE '%$searchKey%' ORDER BY id DESC LIMIT $offset,$numOfrecs");
                         $stmt->execute();
                         $result = $stmt->fetchAll();
                        
@@ -179,13 +187,15 @@ else{
                           { ?>
                             <tr>
                             <td><?php echo $i;?></td>
-                            <td><?php echo $value['title'];?></td>
-                            <td><?php echo substr($value['content'],0,50);?>
+                            <td><?php echo $value['name'];?></td>
+                            <td><?php echo $value['email'];?>
                             </td>
-                            <td><?php echo $value['image'];?>
+                            <td><?php if ($value['role'] === 1) {
+                                echo 'Admin';
+                            } else { echo 'Normal User' ; }?>
                             </td>
-                            <td><a href="edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
-                            <a href="delete.php?id=<?php echo $value['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>
+                            <td><a href="user_edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
+                            <a href="user_delete.php?id=<?php echo $value['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>
                             </tr>
                             <?php    
                             $i++;
