@@ -35,19 +35,11 @@ if ($_POST) {
   $cmts_stmt = $pdo->prepare('SELECT * FROM comments WHERE post_id='.$post_id);
   $cmts_stmt->execute();
   $cmts_result = $cmts_stmt->fetchAll();
-  
-  //to get comment user info
-  $cmtResult = [];
-  if ($cmts_result) {
-    foreach ($cmts_result as $key => $value) 
-    {
-      $authorId = $cmts_result[$key]['author_id'];
-      $cmt_user_stmt = $pdo->prepare('SELECT * FROM users WHERE id='.$authorId);
-      $cmt_user_stmt->execute();
-      $cmtResult[] = $cmt_user_stmt->fetchAll();
-    }
-  }
 
+  //to get comment user info
+  $cmt_user_stmt = $pdo->prepare('SELECT * FROM users WHERE id='.$author_id);
+  $cmt_user_stmt->execute();
+  $cmt_user_result = $cmt_user_stmt->fetchAll();
 
 ?>
 <!DOCTYPE html>
@@ -106,13 +98,13 @@ if ($_POST) {
               <div class="card-footer card-comments" >
                 <div class="card-comment" >
                 <?php 
-                  foreach ($cmts_result as $key => $value) 
+                  foreach ($cmts_result as $value) 
                   { ?>
                   <div class="comment-text" style="margin-left:0px !important">
                   <!-- User image -->
                   <img class="img-circle img-sm" src="dist/img/avatar2.png" alt="User Image">
                     <span class="username">
-                      <?php print_r($cmtResult[$key][0]['name']); ?>
+                      <?php echo $cmt_user_result[0]['name']; ?>
                       <span class="text-muted float-right"><?php echo $value['created_at']; ?></span>
                     </span><!-- /.username -->
                     <?php echo $value['content']; ?>

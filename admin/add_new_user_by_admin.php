@@ -7,10 +7,6 @@ require '../config/config.php';
 if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   header('Location:login.php');
 }
-if ($_SESSION['role'] != 1) {
-  header('Location:login.php');
-}
-
 
 if ($_POST) {
     $name = $_POST['name'];
@@ -42,7 +38,7 @@ if ($_POST) {
  
      if($result)
      {
-         echo '<script>alert("Successfully created a new user account.You must be note user account information!");window.location.href="users.php";</script>';
+         echo '<script>alert("Successfully created a new user account.You must be note user account information!")</script>';
      }
    }
 
@@ -55,7 +51,7 @@ if ($_POST) {
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Blog Project</title>
+  <title>Blog | Dashboard</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Font Awesome -->
@@ -93,7 +89,7 @@ if ($_POST) {
 
     <!-- SEARCH FORM -->
     
-      <form class="form-inline ml-3" method="POST" action="users.php">
+      <form class="form-inline ml-3" method="POST" action="index.php">
         <div class="input-group input-group-sm">
           <input name="search" class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
           <div class="input-group-append">
@@ -216,11 +212,8 @@ if ($_POST) {
                         </select>
                     </div>
                     <div class="row">
-                    <div class="col-6">
+                    <div class="col-12">
                         <button type="submit" class="btn btn-primary btn-block">Submit</button>
-                    </div>
-                    <div class="col-6">
-                        <a href="users.php" type="button" class="btn btn-secondary btn-block">Cancel</a>
                     </div>
                     </div>
                 </form>

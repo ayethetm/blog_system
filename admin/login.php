@@ -20,7 +20,6 @@ if ($_POST) {
         if ($password == $result['password']) {
             $_SESSION['user_id'] = $result['id'];
             $_SESSION['username'] = $result['name'];
-            $_SESSION['role'] = 1; 
             $_SESSION['logged_in'] = time(); //set logged in time
             header('Location:index.php');
         }
