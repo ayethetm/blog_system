@@ -11,8 +11,26 @@ if ($_SESSION['role'] != 1) {
   header('Location:login.php');
 }
 
-
+// validation error prevent
 if ($_POST) {
+  if (empty($_POST['title']) || empty($_POST['content']) || empty($_FILES['image']['name'])) 
+  {
+    if (empty($_POST['title']))
+    {
+      $titleError = 'Title cannot be null';
+    }
+    if (empty($_POST['content']))
+    {
+      $contentError = 'Content cannot be null';
+    }
+    if (empty($_FILES['image']['name']))
+    {
+      $imageError = 'Image cannot be null';
+    }
+  }
+  else
+  {
+   
    $title = $_POST['title'];
    $content = $_POST['content'];
    $image = $_FILES['image']['name'];
@@ -39,6 +57,8 @@ if ($_POST) {
         }
    }
 
+  }
+   
 }
 
 ?>
@@ -168,15 +188,15 @@ if ($_POST) {
               <div class="card-body">
                 <form method="POST" action="add.php" enctype="multipart/form-data">
                     <div class="form-group mb-3">
-                        <label for="title">Title</label>
+                        <label for="title">Title</label><p style="color:red;"><?php echo empty($titleError)? '' : '*'.$titleError ?></p>
                         <input type="text" class="form-control" name="title">
                     </div>
                     <div class="form-group">
-                        <label for="content">Content</label>
+                        <label for="content">Content</label><p style="color:red;"><?php echo empty($contentError)? '' : '*'.$contentError ?></p>
                         <textarea class="form-control" id="" rows="3" name="content"></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="image">Upload image</label>
+                        <label for="image">Upload image</label><p style="color:red;"><?php echo empty($imageError)? '' : '*'.$imageError ?></p>
                         <input type="file" name="image" class="form-control">
                     </div>
                     <button type="submit" class="btn btn-success mt-3">Submit</button>
