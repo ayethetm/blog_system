@@ -14,37 +14,64 @@ if ($_SESSION['role'] != 1) {
 
 if ($_POST) 
 {
-  //ACCEPT POST REQUEST DATA
+  //fetch get data by $_GET id
+  $stmt = $pdo->prepare('SELECT * FROM users WHERE id='.$_GET['id']);
+  $stmt->execute();
+  $result = $stmt->fetchAll();
+  if (empty($_POST['name']) || empty($_POST['email'])) 
+  {
+    if (empty($_POST['name']))
+    {
+      $nameError = 'Username cannot be null';
+    }
+    if (empty($_POST['email']))
+    {
+      $emailError = 'Email cannot be null';
+    }
+     
+  }
+  
+    elseif (!empty($_POST['password']) && strlen($_POST['password']) < 4)
+    {
+      $passwordError = 'Password must be 4 characters at least.';
+    }
+    
+  
+  else
+  {
+    //ACCEPT POST REQUEST DATA
    $id = $_POST['id'];
    $name = $_POST['name'];
    $email = $_POST['email'];
+   $password = $_POST['password'];
    $role = $_POST['accountType'];
 
     //FIRST, check EMAIL exists or not in table
     $statement = $pdo->prepare("SELECT * FROM users WHERE email=:email AND id!=:id");
     $statement->execute(array('email'=>$email,'id'=>$id));
-    $result = $statement->fetch(PDO::FETCH_ASSOC);
+    $user = $statement->fetch(PDO::FETCH_ASSOC);
 
-    if ($result) 
+    if ($user) 
     {
       echo '<script>alert("Email address is already taken");</script>';
-      //fetch get data by $_GET id
-      $stmt = $pdo->prepare('SELECT * FROM users WHERE id='.$_GET['id']);
-      $stmt->execute();
-      $result = $stmt->fetchAll();
     }
     else
     {
-      $stmt = $pdo->prepare("UPDATE users SET name='$name',email='$email',role='$role' WHERE id='$id' ") ;
-      $result = $stmt->execute();
-          
-      if($result)
-          {
-                  echo '<script>alert("Successfully updated !");window.location.href="users.php";</script>';
-          }
+      if ($password != null) 
+      {
+        $stmt = $pdo->prepare("UPDATE users SET name='$name',email='$email',password='$password',role='$role' WHERE id='$id' ") ;
+      }
+      else{
+        $stmt = $pdo->prepare("UPDATE users SET name='$name',email='$email',role='$role' WHERE id='$id' ") ;
+      }
+        $result = $stmt->execute();
+    
+        if($result)
+            {
+                    echo '<script>alert("Successfully updated !");window.location.href="users.php";</script>';
+            }
+      }
     }
-    
-    
 } 
 else{
     
@@ -191,6 +218,7 @@ else{
               <div class="card-body card-body login-card-body">
                 <form action="" method="post">
                 <input type="hidden" name="id" value="<?php echo $result[0]['id']; ?>">
+                <p style="color:red;"><?php echo empty($nameError)? '' : '*'.$nameError ?></p>
                     <div class="input-group mb-3">
                     <input type="text" name="name" class="form-control" placeholder="Name" 
                     value="<?php echo $result[0]['name'];?>">
@@ -200,6 +228,7 @@ else{
                         </div>
                     </div>
                     </div>
+                    <p style="color:red;"><?php echo empty($emailError)? '' : '*'.$emailError ?></p>
                     <div class="input-group mb-3">
                     <input type="email" name="email" class="form-control" placeholder="Email"
                     value="<?php echo $result[0]['email'];?>">
@@ -208,6 +237,15 @@ else{
                         <span class="fas fa-envelope"></span>
                         </div>
                     </div> 
+                    </div>
+                    <p style="color:red;"><?php echo empty($passwordError)? '' : '*'.$passwordError ?></p>
+                    <div class="input-group mb-3">
+                    <input type="password" name="password" class="form-control" placeholder="Password">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                        <span class="fas fa-lock"></span>
+                        </div>
+                    </div>
                     </div>
                     <div class="form-group mb-3">
                         <select id="accountType" class="form-control" name="accountType">

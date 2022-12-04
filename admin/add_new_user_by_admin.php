@@ -13,6 +13,28 @@ if ($_SESSION['role'] != 1) {
 
 
 if ($_POST) {
+  
+  if (empty($_POST['name']) || empty($_POST['email']) || empty($_POST['password']) || strlen($_POST['password']) < 4) 
+  {
+    if (empty($_POST['name']))
+    {
+      $nameError = 'Username cannot be null';
+    }
+    if (empty($_POST['email']))
+    {
+      $emailError = 'Email cannot be null';
+    }
+    if (empty($_POST['password']))
+    {
+      $passwordError = 'Password cannot be null';
+    }
+    if (strlen($_POST['password']) < 4)
+    {
+      $passwordError = 'Password should be at least 4 characters.';
+    }
+    
+  }else
+  {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $password = $_POST['password'];
@@ -46,6 +68,8 @@ if ($_POST) {
      }
    }
 
+  }
+    
 }
 
 ?>
@@ -184,6 +208,7 @@ if ($_POST) {
                 </div>
               <div class="card-body card-body login-card-body">
                 <form action="add_new_user_by_admin.php" method="post">
+                <p style="color:red;"><?php echo empty($nameError)? '' : '*'.$nameError ?></p>
                     <div class="input-group mb-3">
                     <input type="text" name="name" class="form-control" placeholder="Name">
                     <div class="input-group-append">
@@ -192,6 +217,7 @@ if ($_POST) {
                         </div>
                     </div>
                     </div>
+                  <p style="color:red;"><?php echo empty($emailError)? '' : '*'.$emailError ?></p>
                     <div class="input-group mb-3">
                     <input type="email" name="email" class="form-control" placeholder="Email">
                     <div class="input-group-append">
@@ -200,6 +226,7 @@ if ($_POST) {
                         </div>
                     </div>
                     </div>
+                    <p style="color:red;"><?php echo empty($passwordError)? '' : '*'.$passwordError ?></p>
                     <div class="input-group mb-3">
                     <input type="password" name="password" class="form-control" placeholder="Password">
                     <div class="input-group-append">
