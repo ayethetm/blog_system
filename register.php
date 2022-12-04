@@ -4,6 +4,28 @@ session_start();
 require 'config/config.php';
 
 if ($_POST) {
+
+  if (empty($_POST['name']) || empty($_POST['email']) || empty($_POST['password']) || strlen($_POST['password']) < 4) 
+  {
+    if (empty($_POST['name']))
+    {
+      $nameError = 'Username cannot be null';
+    }
+    if (empty($_POST['email']))
+    {
+      $emailError = 'Email cannot be null';
+    }
+    if (empty($_POST['password']))
+    {
+      $passwordError = 'Password cannot be null';
+    }
+    if (strlen($_POST['password']) < 4)
+    {
+      $passwordError = 'Password should be at least 4 characters.';
+    }
+    
+  }
+  else{
     //ACCEPT POST REQUEST DATA
     $name = $_POST['name'];
     $email = $_POST['email'];
@@ -34,6 +56,8 @@ if ($_POST) {
           echo '<script>alert("Successfully created a user account.");window.location.href="login.php";</script>';
       }
     }
+  }
+    
 
 }
 
@@ -71,6 +95,7 @@ if ($_POST) {
       <p class="login-box-msg">Register as a new membership</p>
 
       <form action="register.php" method="post">
+      <p style="color:red;"><?php echo empty($nameError)? '' : '*'.$nameError ?></p>
       <div class="input-group mb-3">
           <input type="text" name="name" class="form-control" placeholder="Name">
           <div class="input-group-append">
@@ -79,6 +104,7 @@ if ($_POST) {
             </div>
           </div>
         </div>
+        <p style="color:red;"><?php echo empty($emailError)? '' : '*'.$emailError ?></p>
         <div class="input-group mb-3">
           <input type="email" name="email" class="form-control" placeholder="Email">
           <div class="input-group-append">
@@ -87,6 +113,7 @@ if ($_POST) {
             </div>
           </div>
         </div>
+        <p style="color:red;"><?php echo empty($passwordError)? '' : '*'.$passwordError ?></p>
         <div class="input-group mb-3">
           <input type="password" name="password" class="form-control" placeholder="Password">
           <div class="input-group-append">
