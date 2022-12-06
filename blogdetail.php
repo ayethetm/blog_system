@@ -16,8 +16,12 @@ $author_id = $_SESSION['user_id'];
 $post_id = $_GET['id'];
 if ($_POST) {
   $comment = $_POST['comment'];
-  
-  $comment_stmt = $pdo->prepare("INSERT INTO comments(content,author_id,post_id) VALUES(:content,:author_id,:post_id)");
+  if (empty($comment))
+  {
+    $cmtError = 'Comment cannot be null';
+  }
+  else{
+    $comment_stmt = $pdo->prepare("INSERT INTO comments(content,author_id,post_id) VALUES(:content,:author_id,:post_id)");
   $result = $comment_stmt->execute(
     array(
           ':content' => $comment,
@@ -30,6 +34,9 @@ if ($_POST) {
         header('Location:blogdetail.php?id='.$post_id);
        }
   }
+  }
+  
+  
 
   //to get all comments under related post
   $cmts_stmt = $pdo->prepare('SELECT * FROM comments WHERE post_id='.$post_id);
@@ -130,6 +137,7 @@ if ($_POST) {
                 <form action="" method="post">
                   
                   <!-- .img-push is used to add margin to elements next to floating images -->
+                  <p style="color:red;"><?php echo empty($cmtError)? '' : '*'.$cmtError ?></p>
                   <div class="img-push">
                     <input type="text" name="comment" class="form-control form-control-sm" placeholder="Press enter to post comment">
                   </div>
