@@ -29,7 +29,7 @@ if ($_POST) {
     //ACCEPT POST REQUEST DATA
     $name = $_POST['name'];
     $email = $_POST['email'];
-    $password = $_POST['password'];
+    $password = password_hash($_POST['password'],PASSWORD_DEFAULT); //pwd hash
 
     //FIRST, check EMAIL exists or not in table
     $statement = $pdo->prepare("SELECT * FROM users WHERE email=:email");

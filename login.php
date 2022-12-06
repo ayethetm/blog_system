@@ -18,7 +18,7 @@ if ($_POST) {
 
     if ($result) {
         //check password correct or not
-        if ($password == $result['password']) {
+        if (password_verify($password,$result['password'])) {
             $_SESSION['user_id'] = $result['id'];
             $_SESSION['username'] = $result['name'];
             $_SESSION['logged_in'] = time();//set logged in time

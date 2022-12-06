@@ -37,7 +37,7 @@ if ($_POST) {
   {
     $name = $_POST['name'];
     $email = $_POST['email'];
-    $password = $_POST['password'];
+    $password = password_hash($_POST['password'],PASSWORD_DEFAULT); //pwd hash
     $accountType = $_POST['accountType'];
    
    //FIRST, check EMAIL exists or not in table
@@ -64,7 +64,7 @@ if ($_POST) {
  
      if($result)
      {
-         echo '<script>alert("Successfully created a new user account.You must be note user account information!");window.location.href="users.php";</script>';
+         echo '<script>alert("Successfully created a new user account!");window.location.href="users.php";</script>';
      }
    }
 

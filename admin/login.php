@@ -16,8 +16,8 @@ if ($_POST) {
     $result = $statement->fetch(PDO::FETCH_ASSOC);
 
     if ($result) {
-        //check password correct or not
-        if ($password == $result['password']) {
+        //check password correct or not ( password hash verify )
+        if (password_verify($password,$result['password'])) {
             $_SESSION['user_id'] = $result['id'];
             $_SESSION['username'] = $result['name'];
             $_SESSION['role'] = 1; 
