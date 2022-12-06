@@ -209,19 +209,20 @@ else{
                 <form method="POST" action="" enctype="multipart/form-data">
                     <!-- token hidden  -->
                     <input type="hidden" name="_token" value="<?php echo $_SESSION['_token']; ?>">
-                    <input type="hidden" name="id" value="<?php echo $result[0]['id']; ?>">
+                    <input type="hidden" name="id" value="<?php echo escape($result[0]['id']) ?>">
                     <div class="form-group mb-3">
                         <label for="title">Title</label><p style="color:red;"><?php echo empty($titleError)? '' : '*'.$titleError ?></p>
-                        <input type="text" class="form-control" name="title" value="<?php echo $result[0]['title']; ?>">
+                        <input type="text" class="form-control" name="title" value="<?php echo escape($result[0]['title']) ?>">
                     </div>
                     <div class="form-group">
                         <label for="content">Content</label><p style="color:red;"><?php echo empty($contentError)? '' : '*'.$contentError ?></p>
-                        <textarea class="form-control" id="" rows="3" name="content" value="<?php echo $result[0]['content']; ?>" ><?php echo $result[0]['content']; ?></textarea>
+                        <textarea class="form-control" id="" rows="3" name="content" value="<?php echo escape($result[0]['content'])  
+                        ?>" ><?php echo escape($result[0]['content']) ?></textarea>
                     </div>
                     <div class="form-group">
                         <label for="image">Upload image</label>
                         <br>
-                        <image src="../images/<?php echo $result[0]['image']; ?>" width="50px" height="50px" />
+                        <image src="../images/<?php echo escape($result[0]['image']) ?>" width="50px" height="50px" />
                         <br><br>
                         <input type="file" name="image" class="form-control">
                     </div>

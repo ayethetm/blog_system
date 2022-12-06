@@ -1,7 +1,8 @@
 <?php
 
-require '../config/config.php';
 session_start();
+require '../config/config.php';
+require '../config/common.php';
 //check whether user is logged in or not
 if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   header('Location:login.php');
@@ -145,10 +146,10 @@ else{
                           { ?>
                             <tr>
                             <td><?php echo $i;?></td>
-                            <td><?php echo $value['title'];?></td>
-                            <td><?php echo substr($value['content'],0,50);?>
+                            <td><?php echo escape($value['title']) ?></td>
+                            <td><?php echo escape(substr($value['content'],0,50))?>
                             </td>
-                            <td><?php echo $value['image'];?>
+                            <td><?php echo escape($value['image']) ?>
                             </td>
                             <td><a href="edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
                             <a href="delete.php?id=<?php echo $value['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>
@@ -179,10 +180,10 @@ else{
                           { ?>
                             <tr>
                             <td><?php echo $i;?></td>
-                            <td><?php echo $value['title'];?></td>
-                            <td><?php echo substr($value['content'],0,50);?>
+                            <td><?php echo escape($value['title']) ?></td>
+                            <td><?php echo escape(substr($value['content'],0,50)) ?>
                             </td>
-                            <td><?php echo $value['image'];?>
+                            <td><?php echo escape($value['image']) ?>
                             </td>
                             <td><a href="edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
                             <a href="delete.php?id=<?php echo $value['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>

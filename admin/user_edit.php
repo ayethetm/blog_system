@@ -223,7 +223,7 @@ else{
                 <p style="color:red;"><?php echo empty($nameError)? '' : '*'.$nameError ?></p>
                     <div class="input-group mb-3">
                     <input type="text" name="name" class="form-control" placeholder="Name" 
-                    value="<?php echo $result[0]['name'];?>">
+                    value="<?php echo escape($result[0]['name']) ?>">
                     <div class="input-group-append">
                         <div class="input-group-text">
                         <span class="fas fa-user"></span>
@@ -233,7 +233,7 @@ else{
                     <p style="color:red;"><?php echo empty($emailError)? '' : '*'.$emailError ?></p>
                     <div class="input-group mb-3">
                     <input type="email" name="email" class="form-control" placeholder="Email"
-                    value="<?php echo $result[0]['email'];?>">
+                    value="<?php echo escape($result[0]['email']) ?>">
                     <div class="input-group-append">
                         <div class="input-group-text">
                         <span class="fas fa-envelope"></span>

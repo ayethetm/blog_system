@@ -1,7 +1,9 @@
 <?php
-require 'config/config.php';
+
 //check whether user is logged in or not
 session_start();
+require 'config/config.php';
+require 'config/common.php';
 
 if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   header('Location:login.php');
@@ -77,10 +79,10 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
                             <div class="col-md-4">
                             <div class="card card-widget">
                               <div class="card-header">
-                                <h4 style="text-align:center"><?php echo $value['title'];?></h4>
+                                <h4 style="text-align:center"><?php echo escape($value['title']) ?></h4>
                               </div>
                               <div class="card-body">
-                                <a href="blogdetail.php?id=<?php echo $value['id']; ?>"><image class="img-fluid pad" src="images/<?php echo $value['image']; ?>" style="width:400px; height:300px !important"/>
+                                <a href="blogdetail.php?id=<?php echo $value['id']; ?>"><image class="img-fluid pad" src="images/<?php echo escape($value['image']) ?>" style="width:400px; height:300px !important"/>
                                 </a>
                               </div>
                             </div>

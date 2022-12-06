@@ -99,12 +99,12 @@ if ($_POST) {
             <!-- Box Comment -->
             <div class="card card-widget">
               <div class="card-header">
-                <h4 style="text-align:center"><?php echo $result[0]['title']; ?></h4>
+                <h4 style="text-align:center"><?php echo escape($result[0]['title']) ?></h4>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <image class="img-fluid pad" src="images/<?php echo $result[0]['image']; ?>" />
-                <p class="mt-5 mb-3"><?php echo $result[0]['content']; ?><p>
+                <image class="img-fluid pad" src="images/<?php echo escape($result[0]['image']) ?>" />
+                <p class="mt-5 mb-3"><?php echo escape($result[0]['content']) ?><p>
                 <a href="index.php" type="button" class="btn btn-sm btn-secondary float-right"><i class="fas fa-back">
                 </i>Back to Home</a>
                 <br>
@@ -121,10 +121,10 @@ if ($_POST) {
                   <!-- User image -->
                   <img class="img-circle img-sm" src="dist/img/avatar2.png" alt="User Image">
                     <span class="username">
-                      <?php print_r($cmtResult[$key][0]['name']); ?>
-                      <span class="text-muted float-right"><?php echo $value['created_at']; ?></span>
+                      <?php echo escape($cmtResult[$key][0]['name']); ?>
+                      <span class="text-muted float-right"><?php echo escape($value['created_at']) ?></span>
                     </span><!-- /.username -->
-                    <?php echo $value['content']; ?>
+                    <?php echo escape($value['content']) ?>
                   </div>
                   <hr>
                     
