@@ -2,6 +2,7 @@
 
 session_start();
 require '../config/config.php';
+require '../config/common.php';
 
 //check whether user is logged in or not
 if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
@@ -208,6 +209,7 @@ if ($_POST) {
                 </div>
               <div class="card-body card-body login-card-body">
                 <form action="add_new_user_by_admin.php" method="post">
+                <input type="hidden" name="_token" value="<?php echo $_SESSION['_token']; ?>">
                 <p style="color:red;"><?php echo empty($nameError)? '' : '*'.$nameError ?></p>
                     <div class="input-group mb-3">
                     <input type="text" name="name" class="form-control" placeholder="Name">

@@ -1,6 +1,8 @@
 <?php
-require 'config/config.php';
+
 session_start();
+require 'config/config.php';
+require 'config/common.php';
 //check whether user is logged in or not
 if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   header('Location:login.php');
@@ -135,6 +137,8 @@ if ($_POST) {
               <!-- /.card-footer -->
               <div class="card-footer">
                 <form action="" method="post">
+                  <!-- token hidden  -->
+                  <input type="hidden" name="_token" value="<?php echo $_SESSION['_token']; ?>">
                   
                   <!-- .img-push is used to add margin to elements next to floating images -->
                   <p style="color:red;"><?php echo empty($cmtError)? '' : '*'.$cmtError ?></p>

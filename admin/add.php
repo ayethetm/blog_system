@@ -2,6 +2,7 @@
 
 session_start();
 require '../config/config.php';
+require '../config/common.php';
 
 //check whether user is logged in or not
 if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
@@ -13,6 +14,7 @@ if ($_SESSION['role'] != 1) {
 
 // validation error prevent
 if ($_POST) {
+  
   if (empty($_POST['title']) || empty($_POST['content']) || empty($_FILES['image']['name'])) 
   {
     if (empty($_POST['title']))
@@ -187,6 +189,8 @@ if ($_POST) {
             <div class="card">
               <div class="card-body">
                 <form method="POST" action="add.php" enctype="multipart/form-data">
+                  <!-- token hidden  -->
+                  <input type="hidden" name="_token" value="<?php echo $_SESSION['_token']; ?>">
                     <div class="form-group mb-3">
                         <label for="title">Title</label><p style="color:red;"><?php echo empty($titleError)? '' : '*'.$titleError ?></p>
                         <input type="text" class="form-control" name="title">

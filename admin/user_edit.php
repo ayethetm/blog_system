@@ -2,6 +2,7 @@
 
 session_start();
 require '../config/config.php';
+require '../config/common.php';
 
 //check whether user is logged in or not
 if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
@@ -217,6 +218,7 @@ else{
                 </div>
               <div class="card-body card-body login-card-body">
                 <form action="" method="post">
+                <input type="hidden" name="_token" value="<?php echo $_SESSION['_token']; ?>">
                 <input type="hidden" name="id" value="<?php echo $result[0]['id']; ?>">
                 <p style="color:red;"><?php echo empty($nameError)? '' : '*'.$nameError ?></p>
                     <div class="input-group mb-3">
